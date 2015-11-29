@@ -29,7 +29,7 @@ main_page.links.each do |link|
     address_description = extract_address_and_description(link.attributes.parent.children[3].text)
 	record = {
 		'council_reference' => link.text[0, 11], # multiple notices can have the same ref...
-		'address' => address_description[0],
+		'address' => address_description[0] + ", QLD",
 		'description' => address_description[1],
 		'info_url' => link.href,
 		'comment_url' => comment_url,
