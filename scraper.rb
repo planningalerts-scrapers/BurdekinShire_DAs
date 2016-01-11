@@ -16,11 +16,11 @@ end
 
 main_page.links.each do |link|
   if( link.text["CONS"] )
-    address_description = extract_address_and_description(link.attributes.parent.children[3].text)
+    description_address = extract_address_and_description(link.attributes.parent.children[3].text)
 	record = {
 		'council_reference' => link.text[0, 11], # multiple notices can have the same ref...
-		'address' => address_description[0],
-		'description' => address_description[1],
+		'address' => "#{description_address[1]}, QLD",
+		'description' => description_address[0],
 		'info_url' => link.href,
 		'comment_url' => comment_url,
 		'date_scraped' => date_scraped
