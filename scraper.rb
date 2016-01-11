@@ -9,19 +9,9 @@ main_page = agent.get(base_url)
 date_scraped = Date.today.to_s
 comment_url = "http://www.burdekin.qld.gov.au/council/contact-council/online-contact-form/"
 
-def remove_at(str)
-  if(str.end_with?("at "))
-    return str[0..(str.length-5)]
-  else
-    return str
-  end
-end
-
 def extract_address_and_description(str)
-  #find first number, and trim untill - or \n
-  address = str[/[0-9](.*)/, 0]
-  description = remove_at(str.gsub(address,"").chomp)
-  [address,description]
+# delimit the address and description with " at "
+  str.split(" at ")
 end
 
 main_page.links.each do |link|
@@ -35,8 +25,6 @@ main_page.links.each do |link|
 		'comment_url' => comment_url,
 		'date_scraped' => date_scraped
 	}
-#	puts "   record:"
-#	puts "   #{record}"
 	if (ScraperWiki.select("* from data where `council_reference` LIKE '#{record['council_reference']}'").empty? rescue true)
 	  ScraperWiki.save_sqlite(['council_reference'], record)
       puts "Storing: #{record['council_reference']}"
