@@ -25,15 +25,8 @@ main_page.links.each do |link|
 		'comment_url' => comment_url,
 		'date_scraped' => date_scraped
 	}
-	if (ScraperWiki.select("* from data where `council_reference` LIKE '#{record['council_reference']}'").empty? rescue true)
-	  ScraperWiki.save_sqlite(['council_reference'], record)
-      puts "Storing: #{record['council_reference']}"
-	else
-	  puts "Skipping already saved record " + record['council_reference']
-	end
-  end  
-  
+  ScraperWiki.save_sqlite(['council_reference'], record)
+  puts "Storing: #{record['council_reference']}"
+  end
+
 end
-
-
-
