@@ -1,4 +1,4 @@
-# #!/usr/bin/env ruby
+#!/usr/bin/env ruby
 require 'scraperwiki'
 require 'mechanize'
 
@@ -66,7 +66,8 @@ appls.each do |appl|
     when 'Status'
       record['status'] = value
     when 'Lodgement date'
-      record['date_recieved'] = value
+      time_obj = DateTime.parse(value)
+      record['date_received'] = time_obj.strftime('%Y-%m-%d')
     end 
   end
 
