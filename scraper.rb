@@ -1,35 +1,78 @@
 # #!/usr/bin/env ruby
-# require 'scraperwiki'
-# require 'mechanize'
-#
-# base_url = "http://www.burdekin.qld.gov.au/building-planning-and-infrastructure/town-planning/current-development-applications/"
-#
-# agent = Mechanize.new
-# main_page = agent.get(base_url)
-# date_scraped = Date.today.to_s
-# comment_url = "http://www.burdekin.qld.gov.au/council/contact-council/online-contact-form/"
-#
-# def extract_address_and_description(str)
-# # delimit the address and description with " at "
-#   str.split(" at ")
-# end
-#
-# main_page.links.each do |link|
-#   if( link.text["CONS"] )
-#     description_address = extract_address_and_description(link.attributes.parent.children[3].text)
-# 	record = {
-# 		'council_reference' => link.text[0, 11], # multiple notices can have the same ref...
-# 		'address' => "#{description_address[1]}, QLD",
-# 		'description' => description_address[0],
-# 		'info_url' => link.href,
-# 		'comment_url' => comment_url,
-# 		'date_scraped' => date_scraped
-# 	}
-#   ScraperWiki.save_sqlite(['council_reference'], record)
-#   puts "Storing: #{record['council_reference']}"
-#   end
-#
-# end
+require 'scraperwiki'
+require 'mechanize'
 
-puts "Scraper is broken and the new council page doesn't have addresses on it!"
-puts "See https://github.com/planningalerts-scrapers/issues/issues/87"
+base_url = "https://www.burdekin.qld.gov.au/Planning-building-and-development/Planning-and-Development/Development-applications/Current-development-applications"
+
+agent = Mechanize.new
+main_page = agent.get(base_url)
+date_scraped = Date.today.to_s
+comment_url = "https://www.burdekin.qld.gov.au/About-council/Contact-us"
+
+# Get applications from the last two weeks
+start_date = (Date.today - 14).strftime("%d/%m/%Y")
+end_date = Date.today.strftime("%d/%m/%Y")
+
+total_records_saved = 0
+
+url = "#{base_url}"
+puts "Fetching page: #{url}"
+page = agent.get(url)
+
+if page.body.size < 1024
+  puts "Page was only #{page.body.size} bytes - too small to have useful content!"
+end
+
+# Find all table rows in the results table (skip header row)
+appls = page.search('.da-list-container article a')
+
+puts "  found #{appls.size} applications on page"
+
+appls.each do |appl|
+  href = appl['href']
+
+  application_link = nil
+
+  if href
+    application_link = page.link_with(href: href)
+    next unless application_link
+  end
+
+  application_page = application_link.click
+
+  fields = application_page.search('.development-application-details-list li')
+
+  # Create the record
+  record = {
+    "council_reference" => '',
+    "date_received" => '',
+    "address" => application_page.at('h1.oc-page-title').text.strip,
+    "description" => '',
+    "status" => '',
+    "info_url" => application_link.href,
+    "comment_url" => comment_url,
+    "date_scraped" => Date.today.to_s
+  }
+
+  fields.each do |field|
+    label = field.at('.field-label').text.strip
+    value = field.at('.field-value').text.strip
+
+    case label
+    when 'Application number'
+      record['council_reference'] = value
+    when 'proposal'
+      record['description'] = value
+    when 'Status'
+      record['status'] = value
+    when 'Lodgement date'
+      record['date_recieved'] = value
+    end 
+  end
+
+  ScraperWiki.save_sqlite(['council_reference'], record)
+  total_records_saved += 1
+end
+
+puts "Scraping complete. Total records saved: #{total_records_saved}"
+puts "No applications found in date range!" if total_records_saved == 0
