@@ -9,10 +9,6 @@ main_page = agent.get(base_url)
 date_scraped = Date.today.to_s
 comment_url = "https://www.burdekin.qld.gov.au/About-council/Contact-us"
 
-# Get applications from the last two weeks
-start_date = (Date.today - 14).strftime("%d/%m/%Y")
-end_date = Date.today.strftime("%d/%m/%Y")
-
 total_records_saved = 0
 
 url = "#{base_url}"
