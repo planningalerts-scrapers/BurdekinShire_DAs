@@ -64,6 +64,7 @@ appls.each do |appl|
       record["date_received"] = time_obj.strftime("%Y-%m-%d")
     end
   end
+  puts "Storing #{record["council_reference"]} - #{record["address"]}: #{record["status"]}"
   ScraperWiki.save_sqlite(["council_reference"], record)
   total_records_saved += 1
 end
