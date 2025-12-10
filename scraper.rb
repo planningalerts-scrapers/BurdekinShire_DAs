@@ -74,6 +74,12 @@ applications.each do |application|
       warn "WARNING: Unexpected field: #{label.inspect}: #{value.inspect}" if ENV["MORPH_DEBUG"]
     end
   end
+  if record["description"].to_s == ""
+    # Extract description from index page (it's in a plain <p> tag)
+    record["description"] = application.search("p").find { |p| p["class"].nil? }&.text&.strip || ""
+
+    warn "WARNING: description is blank" if record["description"].to_s == ""
+  end
   puts "RECORD: #{record.to_yaml}" if ENV["MORPH_DEBUG"]
   puts "Storing #{record['council_reference']} - #{record['address']}: #{record['status']}"
   puts
