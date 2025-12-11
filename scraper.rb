@@ -11,7 +11,7 @@ comment_url = "https://www.burdekin.qld.gov.au/About-council/Contact-us"
 
 total_records_saved = 0
 
-url = "#{base_url}"
+url = base_url.to_s
 puts "Fetching page: #{url}"
 page = agent.get(url)
 
@@ -64,10 +64,10 @@ appls.each do |appl|
       record["date_received"] = time_obj.strftime("%Y-%m-%d")
     end
   end
-  puts "Storing #{record["council_reference"]} - #{record["address"]}: #{record["status"]}"
+  puts "Storing #{record['council_reference']} - #{record['address']}: #{record['status']}"
   ScraperWiki.save_sqlite(["council_reference"], record)
   total_records_saved += 1
 end
 
 puts "Scraping complete. Total records saved: #{total_records_saved}"
-puts "WARNING: No applications found in date range!" if total_records_saved == 0
+puts "WARNING: No applications found in date range!" if total_records_saved.zero?
