@@ -1,10 +1,22 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 require "scraperwiki"
 require "mechanize"
 
 base_url = "https://www.burdekin.qld.gov.au/Planning-building-and-development/Planning-and-Development/Development-applications/Current-development-applications"
 
 agent = Mechanize.new
+
+# Not currently needed
+if ENV["MORPH_AUSTRALIAN_PROXY"]
+  # On morph.io set the environment variable MORPH_AUSTRALIAN_PROXY to
+  # http://morph:password@au.proxy.oaf.org.au:8888 replacing a password with
+  # the real password.
+  puts "Using Australian proxy..."
+  agent.agent.set_proxy(ENV["MORPH_AUSTRALIAN_PROXY"])
+end
+
 _main_page_with_cookies = agent.get(base_url)
 date_scraped = Date.today.to_s
 comment_url = "https://www.burdekin.qld.gov.au/About-council/Contact-us"
@@ -17,20 +29,14 @@ page = agent.get(url)
 
 puts "Page was only #{page.body.size} bytes - too small to have useful content!" if page.body.size < 1024
 
-# Find all table rows in the results table (skip header row)
-appls = page.search(".da-list-container article a")
+# Find all table rows in the result table (skip header row)
+applications = page.search(".da-list-container article a")
 
-puts "  found #{appls.size} applications on page"
+puts "  found #{applications.size} applications on page"
 
-appls.each do |appl|
-  href = appl["href"]
-
-  application_link = nil
-
-  if href
-    application_link = page.link_with(href: href)
-    next unless application_link
-  end
+applications.each do |application|
+  # Convert from Nokogiri Element to Mechanize::Page::Link
+  application_link = Mechanize::Page::Link.new(application, agent, page)
 
   application_page = application_link.click
 
@@ -55,13 +61,17 @@ appls.each do |appl|
     case label
     when "Application number"
       record["council_reference"] = value
-    when "proposal"
+    when "Proposal"
       record["description"] = value
     when "Status"
       record["status"] = value
     when "Lodgement date"
       time_obj = DateTime.parse(value)
       record["date_received"] = time_obj.strftime("%Y-%m-%d")
+    when "Category", "Applicant name", "Decision", "Decision date"
+      puts "info: Ignoring unused field: #{label.inspect}: #{value.inspect}" if ENV["MORPH_DEBUG"]
+    else
+      warn "WARNING: Unexpected field: #{label.inspect}: #{value.inspect}" if ENV["MORPH_DEBUG"]
     end
   end
   puts "Storing #{record['council_reference']} - #{record['address']}: #{record['status']}"
