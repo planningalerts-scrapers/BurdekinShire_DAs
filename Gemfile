@@ -12,7 +12,7 @@ gem "mechanize", "~> 2.8.5"
 gem "nokogiri", "~> 1.16.5"
 gem "ruby-anthropic", "~> 0.4"
 gem "scraperwiki", git: "https://github.com/openaustralia/scraperwiki-ruby.git", branch: "morph_defaults"
-gem "sqlite3", "~> 1.6.3"
+gem "sqlite3", "~> 2.9.5"
 
 # For development and running tests
 gem "dotenv", "~> 3.1"
