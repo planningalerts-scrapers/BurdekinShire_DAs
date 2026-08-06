@@ -6,20 +6,21 @@
 
 source "https://rubygems.org"
 
-ruby "3.2.2"
+ruby "3.2.2" # ruby 3.2.3 does NOT run on heroku-18!
 
-gem "mechanize", "~> 2.8.5"
-gem "nokogiri", "~> 1.16.5"
-gem "ruby-anthropic", "~> 0.4"
+gem "mechanize", "~> 2.14.0"
+gem "nokogiri", "~> 1.17.2" # nokogiri 1.18 does NOT run on heroku-18!
 gem "scraperwiki", git: "https://github.com/openaustralia/scraperwiki-ruby.git", branch: "morph_defaults"
-gem "sqlite3", "~> 1.6.3"
+gem "sqlite3", "~> 2.2.0" # sqlite3 2.3.0 does NOT run on heroku-18!
 
-# For development and running tests
-gem "dotenv", "~> 3.1"
-gem "rake", "~> 12.3"
-gem "rspec", "~> 3.0"
-gem "simplecov", "~> 0.18.0"
-gem "simplecov-console"
-gem "timecop", "~> 0.9.10"
-gem "vcr", "~> 6.3"
-gem "webmock", "~> 3.25"
+group :development do
+  # For development and running tests
+  gem "dotenv", "~> 3.1"
+  gem "rake", "~> 12.3"
+  gem "rspec", "~> 3.0"
+  gem "simplecov", "~> 0.18.0"
+  gem "simplecov-console"
+  gem "timecop", "~> 0.9.10"
+  gem "vcr", "~> 6.3"
+  gem "webmock", "~> 3.25"
+end
