@@ -4,7 +4,7 @@
 require "scraperwiki"
 require "mechanize"
 
-base_url = "https://www.burdekin.qld.gov.au/Planning-building-and-development/Planning-and-Development/Development-applications/Current-development-applications"
+base_url = "https://www.burdekin.qld.gov.au/Planning-building-and-development/Planning-and-Development/Development-applications"
 
 agent = Mechanize.new
 
