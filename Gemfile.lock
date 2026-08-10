@@ -102,7 +102,7 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv (~> 3.1)
-  mechanize (~> 2.14.0)
+  mechanize (~> 2.14)
   nokogiri (~> 1.17.2)
   rake (~> 12.3)
   rspec (~> 3.0)
