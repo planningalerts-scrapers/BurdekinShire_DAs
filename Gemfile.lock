@@ -80,7 +80,7 @@ GEM
       simplecov
       terminal-table
     simplecov-html (0.13.2)
-    sqlite3 (2.2.0-x86_64-linux-gnu)
+    sqlite3 (2.9.6-x86_64-linux-gnu)
     sqlite_magic (0.0.6)
       sqlite3
     terminal-table (4.0.0)
@@ -109,7 +109,7 @@ DEPENDENCIES
   scraperwiki!
   simplecov (~> 0.18.0)
   simplecov-console
-  sqlite3 (~> 2.2.0)
+  sqlite3 (~> 2.9.6)
   timecop (~> 0.9.10)
   vcr (~> 6.3)
   webmock (~> 3.25)
